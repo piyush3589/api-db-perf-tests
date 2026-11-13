@@ -1,9 +1,21 @@
 # API + Database Testing and Load Testing (Python)
 
+[![API and DB tests](https://github.com/piyush3589/api-db-perf-tests/actions/workflows/ci.yml/badge.svg)](https://github.com/piyush3589/api-db-perf-tests/actions/workflows/ci.yml)
+
 Two QA skills in one repo, on a small Orders API (`app/server.py`, stdlib + SQLite) that I wrote as a test target:
 
 1. **API + DB tests (pytest):** every API call is checked *and* the database is inspected directly, so the tests prove data was really stored, changed, deleted, or **not** stored when a request is rejected.
 2. **Load test (Locust):** a realistic user mix hits the API, and a threshold script fails the run when response time or error rate break agreed limits.
+
+## Tech stack
+
+| | |
+|---|---|
+| Language | Python 3 (CI runs 3.12) |
+| Test framework | Pytest, requests, sqlite3 |
+| Load testing | Locust, with a threshold script that fails the run on slow responses or errors |
+| Test target | Orders API in `app/server.py` (standard library and SQLite), written as a test target |
+| CI | GitHub Actions: runs the tests, then a 15-second smoke load test with thresholds |
 
 ## What the 24 tests cover
 
@@ -16,6 +28,9 @@ Two QA skills in one repo, on a small Orders API (`app/server.py`, stdlib + SQLi
 | Data safety | SQL-injection text stored as plain text and table survives, unicode and 500-char text round trip |
 
 ## Run it
+
+**Prerequisites:** Python 3 and pip. The tests start their own server and a temporary SQLite database. Only the Locust run needs the server started by hand.
+
 
 ```bash
 python -m venv .venv && source .venv/bin/activate     # Windows: .venv\Scripts\activate
@@ -39,8 +54,12 @@ python perf/check_thresholds.py perf/results_stats.csv --p95-ms 500 --max-fail-p
 - **Load test mix:** 5 browse : 3 order : 2 view : 1 cancel, closer to real use than hammering one endpoint.
 - **Limits of the load numbers:** the API runs on the same machine as Locust, so the numbers (a few ms) show that the setup works, **not** how a production system would perform. Use the tooling against a real staging URL for real results.
 
-## Possible next steps
+## Roadmap
 
 - Run against Postgres in Docker instead of SQLite
 - Add `PUT /orders/{id}` and update tests
-- Ramp-up / spike / soak load profiles and a Locust HTML report (`--html report.html`)
+- Ramp-up, spike and soak load profiles, and a Locust HTML report (`--html report.html`)
+
+## Author
+
+Piyush Raut | [GitHub](https://github.com/piyush3589) | [LinkedIn](https://linkedin.com/in/piyushr30) | piyush318@gmail.com
